@@ -10,7 +10,7 @@ dictionary
 * dic.sqlite : 是个简单的例子，里面保存的翻译很少。
 + dic.py     : 可以在终端上独立运行，但是这里作为
 		模块供dictionary.py使用。
-+ dictionary.py :图形化显示前端。
+* dictionary.py :图形化显示前端。
 
 
 依赖软件版本：
