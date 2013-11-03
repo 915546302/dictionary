@@ -132,11 +132,12 @@ class Dic(QtGui.QWidget):
                 self.okButton()
             elif event.key() == QtCore.Qt.Key_Control|QtCore.Qt.Key_Shift:
                 self.clipboardBotton()
-        
+            elif event.key() == QtCore.Qt.Key_Control|QtCore.Qt.Key_Alt:
+                self.setVisible(False)
+                self.irregular.setVisible(True)
     def closeEvent(self, event):
         self.fe.close()
         self.irregular.destroy()
-        #self.destroy(True,True)
     def enterEvent(self, evt):
         self.activateWindow()
         if(self.x() == self.frame-self.width()):
