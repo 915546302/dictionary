@@ -92,7 +92,7 @@ class Dic(QtGui.QWidget):
 
     def clipboardBotton(self):
         clipboard = QtGui.QApplication.clipboard()
-        print clipboard.text()
+	#print clipboard.text()
         self.edit.setText(clipboard.text())
         self.buttonClicked(clipboard.text())
     def okButton(self):
@@ -126,7 +126,6 @@ class Dic(QtGui.QWidget):
             
             trans=self.setColor(src,'red')
             zh=self.fe.fecth('qt')
-            print zh[0],zh[1]
             trans+=self.setColor(zh[0],'blue')
             tmp=zh[1]
             if tmp=='':
