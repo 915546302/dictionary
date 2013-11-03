@@ -40,10 +40,10 @@ class IrregularForm(QtGui.QWidget):
 class Dic(QtGui.QWidget):
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
-        self.frame=1
+        self.alt=None
         self.irregular=IrregularForm()
         self.irregular.show() 
-        #self.irregular.setVisible(False)
+ 
         self.curTime=time.strftime("%Y-%m-%d %H:%M", \
             time.localtime(time.time()))
         okButton = QtGui.QPushButton("OK")
@@ -130,32 +130,29 @@ class Dic(QtGui.QWidget):
         self.word.setText('<h3>'+trans+'</h3>')
 
     def keyPressEvent(self, event):
+            
             if event.key() == QtCore.Qt.Key_Return:
                 self.okButton()
             elif event.key() == QtCore.Qt.Key_Shift:
-                print 'here'
                 self.clipboardBotton()
             elif event.key() == QtCore.Qt.Key_Alt:
-                cx,cy=QtGui.QCursor.pos().x(),QtGui.QCursor.pos().y()
-                if(cx >= self.x() and cx <= self.x()+self.width()
-                    and cy >= self.y() and cy <=self.y()+self.height()):
-                    return
-                else:
-                    self.setVisible(False)
-                    self.irregular.setVisible(True)
+                self.alt=QtCore.Qt.Key_Alt
+                self.setVisible(False)
+                self.irregular.setVisible(True)
             elif event.key() == QtCore.Qt.Key_Control:
                 self.edit.setText('')
     def closeEvent(self, event):
         self.fe.close()
-        self.irregular.destroy()
+        QtGui.qApp.quit()
+        #self.irregular.destroy()
     def leaveEvent(self,evt): 
-         
+        if self.alt==QtCore.Qt.Key_Alt:
+            self.alt=-1
+            return
         cx,cy=QtGui.QCursor.pos().x(),QtGui.QCursor.pos().y()
         if(cx >= self.x() and cx <= self.x()+self.width()
             and cy >= self.y() and cy <=self.y()+self.height()):
-            #self.setWindowOpacity(0.95)
-            self.setVisible(True)            
-            self.irregular.setVisible(False)
+            pass
         else:
             
             self.irregular.setVisible(True)
