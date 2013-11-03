@@ -11,7 +11,7 @@ class IrregularForm(QtGui.QWidget):
             QtGui.QWidget.__init__(self, parent)
             self.parent=parent
 
-            mask=QtGui.QPixmap("./icons/search50.png")
+            mask=QtGui.QPixmap("./icons/search40.png")
             self.setMask(QtGui.QBitmap(mask.mask()))
             p=QtGui.QPalette()
             p.setBrush(QtGui.QPalette.Window, QtGui.QBrush(mask))
@@ -19,6 +19,7 @@ class IrregularForm(QtGui.QWidget):
             self.setGeometry(100, 100, 100, 100)
             self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
             self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+            self.setWindowIcon(QtGui.QIcon('./icons/search50.png'))
             self.mouseMovePos = QtCore.QPoint(0, 0)
         def mouseMoveEvent(self,event):
              if(self.mouseMovePos != QtCore.QPoint(0, 0)):
@@ -34,7 +35,8 @@ class IrregularForm(QtGui.QWidget):
         def mouseDoubleClickEvent(self, event):
             self.emit(QtCore.SIGNAL('trueVisible()'))
         def keyPressEvent(self, event):
-            self.emit(QtCore.SIGNAL('trueVisible()'))
+            if event.key() == QtCore.Qt.Key_X:
+                self.emit(QtCore.SIGNAL('trueVisible()'))
 class Dic(QtGui.QWidget):
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
@@ -73,7 +75,7 @@ class Dic(QtGui.QWidget):
         self.setWindowOpacity(0.95)
         self.setWindowTitle('Dictionary')
         self.setGeometry(300, 300, 350, 150)
-       # self.setWindowIcon(QtGui.QIcon('icons/dic.png'))
+        self.setWindowIcon(QtGui.QIcon('./icons/search50.png'))
         self.connect(okButton, QtCore.SIGNAL('clicked()'), \
             self.okButton)
         self.connect(cbbtn, QtCore.SIGNAL('clicked()'), \
@@ -130,20 +132,22 @@ class Dic(QtGui.QWidget):
     def keyPressEvent(self, event):
             if event.key() == QtCore.Qt.Key_Return:
                 self.okButton()
-            elif event.key() == QtCore.Qt.Key_Control|QtCore.Qt.Key_Shift:
+            elif event.key() == QtCore.Qt.Key_Shift:
+                print 'here'
                 self.clipboardBotton()
-            elif event.key() == QtCore.Qt.Key_Control|QtCore.Qt.Key_Alt:
-                self.setVisible(False)
-                self.irregular.setVisible(True)
+            elif event.key() == QtCore.Qt.Key_Alt:
+                cx,cy=QtGui.QCursor.pos().x(),QtGui.QCursor.pos().y()
+                if(cx >= self.x() and cx <= self.x()+self.width()
+                    and cy >= self.y() and cy <=self.y()+self.height()):
+                    return
+                else:
+                    self.setVisible(False)
+                    self.irregular.setVisible(True)
+            elif event.key() == QtCore.Qt.Key_Control:
+                self.edit.setText('')
     def closeEvent(self, event):
         self.fe.close()
         self.irregular.destroy()
-    def enterEvent(self, evt):
-        self.activateWindow()
-        if(self.x() == self.frame-self.width()):
-            self.move(-self.frame,self.y())
-        elif(self.y() == self.frame-self.height()+self.y()-self.geometry().y()):
-            self.move(self.x(),-self.frame)
     def leaveEvent(self,evt): 
          
         cx,cy=QtGui.QCursor.pos().x(),QtGui.QCursor.pos().y()
