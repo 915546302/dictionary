@@ -1,17 +1,47 @@
 #!/usr/bin/python
 #coding:utf-8
 
-import sys
+import sys,re
 from PyQt4 import QtGui
 from PyQt4 import QtCore
 from dic import Fecth
 import time
+class IrregularForm(QtGui.QWidget):
+        def __init__(self, parent=None):
+            QtGui.QWidget.__init__(self, parent)
+            self.parent=parent
 
+            mask=QtGui.QPixmap("./icons/search50.png")
+            self.setMask(QtGui.QBitmap(mask.mask()))
+            p=QtGui.QPalette()
+            p.setBrush(QtGui.QPalette.Window, QtGui.QBrush(mask))
+            self.setPalette(p)
+            self.setGeometry(100, 100, 100, 100)
+            self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
+            self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+            self.mouseMovePos = QtCore.QPoint(0, 0)
+        def mouseMoveEvent(self,event):
+             if(self.mouseMovePos != QtCore.QPoint(0, 0)):
+                self.move(self.geometry().x() + event.globalPos().x() \
+                    - self.mouseMovePos.x(),self.geometry().y() \
+                    + event.globalPos().y() - self.mouseMovePos.y())
+                self.mouseMovePos = event.globalPos()
+        def mousePressEvent(self,event):
+            self.mouseMovePos = event.globalPos()
+
+        def mouseReleaseEvent(self,event):
+            self.mouseMovePos = QtCore.QPoint(0, 0)
+        def mouseDoubleClickEvent(self, event):
+            self.emit(QtCore.SIGNAL('trueVisible()'))
+        def keyPressEvent(self, event):
+            self.emit(QtCore.SIGNAL('trueVisible()'))
 class Dic(QtGui.QWidget):
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
         self.frame=1
-        
+        self.irregular=IrregularForm()
+        self.irregular.show() 
+        #self.irregular.setVisible(False)
         self.curTime=time.strftime("%Y-%m-%d %H:%M", \
             time.localtime(time.time()))
         okButton = QtGui.QPushButton("OK")
@@ -48,8 +78,16 @@ class Dic(QtGui.QWidget):
             self.okButton)
         self.connect(cbbtn, QtCore.SIGNAL('clicked()'), \
             self.clipboardBotton)
-        self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint);
+        self.connect(self.irregular, QtCore.SIGNAL('trueVisible()'), \
+            self,QtCore.SLOT('trueVisible()') )
+        #self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
+        self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
         self.fe=Fecth()
+    @QtCore.pyqtSlot()
+    def trueVisible(self):
+        self.setVisible(True)
+        self.irregular.setVisible(False)
+
     def clipboardBotton(self):
         clipboard = QtGui.QApplication.clipboard()
         self.edit.setText(clipboard.text())
@@ -58,34 +96,35 @@ class Dic(QtGui.QWidget):
         src=self.edit.text()
         self.buttonClicked(src)
     def setColor(self,string,key):
-        if key==1:
+        if key=='red':
             return '<font color=\"red\">'+string+'</font>'+'<br>'
-        elif key==2:
+        elif key=='blue':
             return '<font color=\"blue\">'+string+'</font>'+'<br>'
         else:
             return '<font color=\"green\">'+string+'</font>'+'<br>'
     def buttonClicked(self,src):
-        if src=='':
+
+        g=re.match('[a-zA-Z]+',src)
+        if not g:
+            self.word.setText(self.setColor('<h3>Not a word!</h3>','red'))
             return
+        src=g.group()
         rows=self.fe.searchDB(src,None)
         trans=None  
         if rows:
-            if rows==1:
-                 self.word.setText('<h3>Not Found!</h3>')
-                 return
             for row in rows:
-                trans = self.setColor(row[0],1)
+                trans = self.setColor(row[0],'red')
                 if row[1]!='':
-                   trans+=self.setColor(row[1]+','+row[2],2)
-                trans+= self.setColor(row[3],3)
+                   trans+=self.setColor(row[1]+','+row[2],'blue')
+                trans+= self.setColor(row[3],'green')
         else:
-            trans=self.setColor(src,1)
+            trans=self.setColor(src,'red')
             zh=self.fe.fecth('qt')
-            trans+=self.setColor(zh[0],2)
+            trans+=self.setColor(zh[0],'blue')
             tmp=zh[1]
             if tmp=='':
                 tmp='<b>Fetch fail!</b>'
-            trans+= self.setColor(tmp,3)
+            trans+= self.setColor(tmp,'green')
         self.word.setText('<h3>'+trans+'</h3>')
 
     def keyPressEvent(self, event):
@@ -96,27 +135,28 @@ class Dic(QtGui.QWidget):
         
     def closeEvent(self, event):
         self.fe.close()
+        self.irregular.destroy()
+        #self.destroy(True,True)
     def enterEvent(self, evt):
         self.activateWindow()
         if(self.x() == self.frame-self.width()):
             self.move(-self.frame,self.y())
         elif(self.y() == self.frame-self.height()+self.y()-self.geometry().y()):
             self.move(self.x(),-self.frame)
-    def leaveEvent(self,evt):    
-      cx,cy=QtGui.QCursor.pos().x(),QtGui.QCursor.pos().y()
-      
-      if(cx >= self.x() and cx <= self.x()+self.width()
-          and cy >= self.y() and cy <= self.geometry().y()):
-          self.setWindowOpacity(0.95)
-          self.resize(350,150)
-          return#title bar
-      else:
-          self.setWindowOpacity(0.3)
-          
-      # elif(self.x() < 0 and QtGui.QCursor.pos().x()>0):
-      #     self.move(self.frame-self.width(),self.y())
-      # elif(self.y() < 0 and QtGui.QCursor.pos().y()>0):
-      #     self.move(self.x(), self.frame-self.height()+self.y()-self.geometry().y())
+    def leaveEvent(self,evt): 
+         
+        cx,cy=QtGui.QCursor.pos().x(),QtGui.QCursor.pos().y()
+        if(cx >= self.x() and cx <= self.x()+self.width()
+            and cy >= self.y() and cy <=self.y()+self.height()):
+            #self.setWindowOpacity(0.95)
+            self.setVisible(True)            
+            self.irregular.setVisible(False)
+        else:
+            
+            self.irregular.setVisible(True)
+            self.setVisible(False)
+            #self.setWindowOpacity(0.3)
+
 app = QtGui.QApplication(sys.argv)
 dic = Dic()
 dic.show()
