@@ -104,11 +104,10 @@ class Fecth:
         self.rows=None
         self.zh=None
     def searchDB(self,lis,action):
-        g=re.match('[a-zA-Z]+',lis)
-        if g:
-            self.rows=self.t.isExists(lis,action)
-            return self.rows
-        return 1
+        
+        self.rows=self.t.isExists(lis,action)
+        return self.rows
+
     def fecth(self,flag):
         #print 'Net fetching...'
         self.t.getHtml()
@@ -129,11 +128,13 @@ if __name__=='__main__':
     if len(sys.argv)==3:
         action=sys.argv[2]
     s=sys.argv[1]
+    g=re.match('[a-zA-Z]+',s)
+    if not g:
+        sys.exit(1)
+    s=g.group()
     rows=f.searchDB(s,action) 
 
     if rows:
-        if rows==1:
-            sys.exit(1)
         for row in rows:
             print row[0]
             if row[1]!='':
