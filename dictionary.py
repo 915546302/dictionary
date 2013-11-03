@@ -1,12 +1,12 @@
 #!/usr/bin/python
-#coding:utf-8
+#--*--coding:utf-8--*--
 
 import sys,re
 from PyQt4 import QtGui
 from PyQt4 import QtCore
 from dic import Fecth
 import time
-class IrregularForm(QtGui.QWidget):
+class IrregularForm(QtGui.QWidget): 
         def __init__(self, parent=None):
             QtGui.QWidget.__init__(self, parent)
             self.parent=parent
@@ -84,7 +84,7 @@ class Dic(QtGui.QWidget):
             self,QtCore.SLOT('trueVisible()') )
         #self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
         self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
-        self.fe=Fecth()
+        #self.fe=Fecth()
     @QtCore.pyqtSlot()
     def trueVisible(self):
         self.setVisible(True)
@@ -92,6 +92,7 @@ class Dic(QtGui.QWidget):
 
     def clipboardBotton(self):
         clipboard = QtGui.QApplication.clipboard()
+        print clipboard.text()
         self.edit.setText(clipboard.text())
         self.buttonClicked(clipboard.text())
     def okButton(self):
@@ -111,25 +112,29 @@ class Dic(QtGui.QWidget):
             self.word.setText(self.setColor('<h3>Not a word!</h3>','red'))
             return
         src=g.group()
+        self.fe=Fecth()
         rows=self.fe.searchDB(src,None)
-        trans=None  
+        trans=''
         if rows:
             for row in rows:
                 trans = self.setColor(row[0],'red')
                 if row[1]!='':
                    trans+=self.setColor(row[1]+','+row[2],'blue')
                 trans+= self.setColor(row[3],'green')
+            self.word.setText('<h3>'+trans+'</h3>')
         else:
+            
             trans=self.setColor(src,'red')
             zh=self.fe.fecth('qt')
+            print zh[0],zh[1]
             trans+=self.setColor(zh[0],'blue')
             tmp=zh[1]
             if tmp=='':
                 tmp='<b>Fetch fail!</b>'
             trans+= self.setColor(tmp,'green')
-        self.word.setText('<h3>'+trans+'</h3>')
-
-    def keyPressEvent(self, event):
+            self.word.setText('<h3>'+trans+'</h3>')
+        self.fe.close()
+    def keyReleaseEvent(self, event):
             
             if event.key() == QtCore.Qt.Key_Return:
                 self.okButton()
@@ -139,10 +144,10 @@ class Dic(QtGui.QWidget):
                 self.alt=QtCore.Qt.Key_Alt
                 self.setVisible(False)
                 self.irregular.setVisible(True)
-            elif event.key() == QtCore.Qt.Key_Control:
+            elif event.key() == QtCore.Qt.Key_Space:
                 self.edit.setText('')
     def closeEvent(self, event):
-        self.fe.close()
+        
         QtGui.qApp.quit()
         #self.irregular.destroy()
     def leaveEvent(self,evt): 
