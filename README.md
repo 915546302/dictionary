@@ -13,7 +13,7 @@ dictionary
 + dictionary.py :图形化显示前端。
 
 
-软件版本：
+依赖软件版本：
 =========
 * python2.7.5
 * pyqt4
@@ -22,8 +22,9 @@ dictionary
 =========
 在此之前需要您安装python-qt4,可以使用：
 * sudo apt-get install python-qt4
-在终端运行：python dictionary.py&
-本软件有两个窗口，主窗体翻译，子窗体唤起住窗体。
+
+* 在终端运行：python dictionary.py&
+* 本软件有两个窗口，主窗体翻译，子窗体唤起住窗体。
 鼠标离开主窗体后会自动隐藏，子窗体则显示。
 双击子窗体，主窗体显示，子窗体隐藏。
 
