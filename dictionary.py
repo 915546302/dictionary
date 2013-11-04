@@ -5,7 +5,7 @@ import sys,re
 from PyQt4 import QtGui
 from PyQt4 import QtCore
 from dic import Fecth
-import time
+import time,os
 class IrregularForm(QtGui.QWidget): 
         def __init__(self, parent=None):
             QtGui.QWidget.__init__(self, parent)
@@ -145,6 +145,8 @@ class Dic(QtGui.QWidget):
                 self.irregular.setVisible(True)
             elif event.key() == QtCore.Qt.Key_Space:
                 self.edit.setText('')
+            elif event.key() == QtCore.Qt.Key_Control:
+                QtGui.qApp.quit()
     def closeEvent(self, event):
         
         QtGui.qApp.quit()
@@ -162,8 +164,23 @@ class Dic(QtGui.QWidget):
             self.irregular.setVisible(True)
             self.setVisible(False)
             #self.setWindowOpacity(0.3)
-
-app = QtGui.QApplication(sys.argv)
-dic = Dic()
-dic.show()
-sys.exit(app.exec_())
+def run():
+    app = QtGui.QApplication(sys.argv)
+    dic = Dic()
+    dic.show()
+    sys.exit(app.exec_())
+if __name__=='__main__':
+    if len(sys.argv)==1:
+        run()
+    elif len(sys.argv)==2:
+        if sys.argv[1]=='--fork' or \
+            sys.argv[1]=='-f':
+            try:
+                if os.fork() > 0:
+                    os._exit(0)
+            except OSError,error:
+                print 'fork #1 failed: %d (%s)' % (error.errno, error.strerror)
+                os._exit(1)
+            run()
+        elif sys.argv[1]=='-h':
+            print 'Usage:','\n\t-h help,\n\t--fork,-f daemon run...'
