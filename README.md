@@ -3,8 +3,9 @@ Update:
 * python dictionary.py -f 
 加f选项表示后台运行
 * 按Ctrl关闭程序
+* 修复了子窗口不能置顶的bug
 
-dictionary
+Dictionary:
 ==========
 
 *    利用pyQt4图形库实现的前端，后面通过网络抓取
