@@ -1,3 +1,9 @@
+Update:
+=======
+* python dictionary.py -f 
+加f选项表示后台运行
+* 按Ctrl关闭程序
+
 dictionary
 ==========
 
@@ -39,6 +45,7 @@ dictionary
 * shift搜索剪切板的单词;
 * Alt隐藏主窗体，显示子窗体;
 * Space清空输入框。
+* Ctrl关闭程序
 
 当前窗体：子窗体
 * 按x键唤出住窗体。
