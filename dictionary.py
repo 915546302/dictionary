@@ -16,9 +16,9 @@ class IrregularForm(QtGui.QWidget):
             p=QtGui.QPalette()
             p.setBrush(QtGui.QPalette.Window, QtGui.QBrush(mask))
             self.setPalette(p)
-            self.setGeometry(100, 100, 100, 100)
-            self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
-            self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+            self.setGeometry(200, 100, 40, 40)
+            self.setWindowFlags(QtCore.Qt.FramelessWindowHint|QtCore.Qt.WindowStaysOnTopHint)
+
             self.setWindowIcon(QtGui.QIcon('./icons/search50.png'))
             self.mouseMovePos = QtCore.QPoint(0, 0)
         def mouseMoveEvent(self,event):
@@ -37,6 +37,8 @@ class IrregularForm(QtGui.QWidget):
         def keyPressEvent(self, event):
             if event.key() == QtCore.Qt.Key_X:
                 self.emit(QtCore.SIGNAL('trueVisible()'))
+            elif event.key() == QtCore.Qt.Key_Control:
+                QtGui.qApp.quit()
 class Dic(QtGui.QWidget):
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
