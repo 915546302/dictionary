@@ -10,17 +10,19 @@ class IrregularForm(QtGui.QWidget):
         def __init__(self, parent=None):
             QtGui.QWidget.__init__(self, parent)
             self.parent=parent
-
-            mask=QtGui.QPixmap("./icons/search40.png")
+            self.myMenu=None
+            mask=QtGui.QPixmap("./icons/translate60.png")
             self.setMask(QtGui.QBitmap(mask.mask()))
             p=QtGui.QPalette()
             p.setBrush(QtGui.QPalette.Window, QtGui.QBrush(mask))
             self.setPalette(p)
-            self.setGeometry(200, 100, 40, 40)
-            self.setWindowFlags(QtCore.Qt.FramelessWindowHint|QtCore.Qt.WindowStaysOnTopHint)
+            self.setGeometry(200, 100, 60, 60)
+            self.setWindowFlags(QtCore.Qt.FramelessWindowHint|QtCore.Qt.WindowStaysOnTopHint|
+                QtCore.Qt.X11BypassWindowManagerHint|QtCore.Qt.Tool )
 
-            self.setWindowIcon(QtGui.QIcon('./icons/search50.png'))
+            self.setWindowIcon(QtGui.QIcon('./icons/translate60.png'))
             self.mouseMovePos = QtCore.QPoint(0, 0)
+            #self.creatTrayIcon()
         def mouseMoveEvent(self,event):
              if(self.mouseMovePos != QtCore.QPoint(0, 0)):
                 self.move(self.geometry().x() + event.globalPos().x() \
@@ -35,10 +37,24 @@ class IrregularForm(QtGui.QWidget):
         def mouseDoubleClickEvent(self, event):
             self.emit(QtCore.SIGNAL('trueVisible()'))
         def keyPressEvent(self, event):
-            if event.key() == QtCore.Qt.Key_X:
+            if (event.key() == QtCore.Qt.Key_X):
                 self.emit(QtCore.SIGNAL('trueVisible()'))
             elif event.key() == QtCore.Qt.Key_Control:
                 QtGui.qApp.quit()
+        # def creatTrayMenu(self):        ##intend to add tray. 
+
+        #     quitAction = QtGui.QAction(u"退出(&Q)",self)
+        #     self.connect(quitAction,QtCore.SIGNAL('triggered()'),QtGui.qApp,QtCore.SLOT('quit()'))
+
+        #     self.myMenu = QtGui.QMenu(QtGui.QApplication.desktop())
+        #     self.myMenu.addAction(quitAction)
+
+        # def creatTrayIcon(self):
+        #     self.creatTrayMenu()
+        #     myTrayIcon =QtGui.QSystemTrayIcon(self)
+        #     myTrayIcon.setIcon(QtGui.QIcon("./icons/search40.png"))
+        #     myTrayIcon.setContextMenu(self.myMenu)    #设置托盘上下文菜单   
+        #     myTrayIcon.show()
 class Dic(QtGui.QWidget):
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
@@ -86,7 +102,6 @@ class Dic(QtGui.QWidget):
             self,QtCore.SLOT('trueVisible()') )
         #self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
         self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
-        #self.fe=Fecth()
     @QtCore.pyqtSlot()
     def trueVisible(self):
         self.setVisible(True)
@@ -94,7 +109,7 @@ class Dic(QtGui.QWidget):
 
     def clipboardBotton(self):
         clipboard = QtGui.QApplication.clipboard()
-	#print clipboard.text()
+
         self.edit.setText(clipboard.text())
         self.buttonClicked(clipboard.text())
     def okButton(self):
